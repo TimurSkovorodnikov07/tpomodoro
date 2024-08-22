@@ -1,0 +1,14 @@
+/home/timur/Desktop/tpomodoro/bin/Debug/net8.0/tpomodoro
+/home/timur/Desktop/tpomodoro/bin/Debug/net8.0/tpomodoro.deps.json
+/home/timur/Desktop/tpomodoro/bin/Debug/net8.0/tpomodoro.runtimeconfig.json
+/home/timur/Desktop/tpomodoro/bin/Debug/net8.0/tpomodoro.dll
+/home/timur/Desktop/tpomodoro/bin/Debug/net8.0/tpomodoro.pdb
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.GeneratedMSBuildEditorConfig.editorconfig
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.AssemblyInfoInputs.cache
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.AssemblyInfo.cs
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.csproj.CoreCompileInputs.cache
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.dll
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/refint/tpomodoro.dll
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.pdb
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.genruntimeconfig.cache
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/ref/tpomodoro.dll

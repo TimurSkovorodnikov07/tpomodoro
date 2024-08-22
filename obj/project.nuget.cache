@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "8gFjcAjP9re8hfZJQBj3BA4RYyv1ueWAQ4BJD58teJSji7Knx+YcI6kpFUm5CwN21Knt/vRsPcOYHMIp7/JDag==",
+  "success": true,
+  "projectFilePath": "/home/timur/Desktop/tpomodoro/tpomodoro.csproj",
+  "expectedPackageFiles": [
+    "/home/timur/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.7/microsoft.aspnetcore.app.ref.8.0.7.nupkg.sha512"
+  ],
+  "logs": []
+}
