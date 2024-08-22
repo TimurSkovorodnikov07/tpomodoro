@@ -1,10 +1,19 @@
-﻿public class Program
+﻿using System.Diagnostics;
+using System.Reflection;
+public class Program
 {
     private static object locker = new();
+    private const ConsoleColor defColor = ConsoleColor.Blue;
+
     public static void Main(string[] args)
     {
-        const ConsoleColor defColor = ConsoleColor.DarkBlue;
-        const ConsoleColor color = ConsoleColor.Magenta;
+        var needDrawing = false;
+
+        if (args.Length > 0 && args[0] == "drawEnable")
+        {
+            needDrawing = true;
+            Write("The input will NOT work (icat cannot work with it)", ConsoleColor.Red);
+        }
 
         const double workMinute = 25;
         const double restMinute = 5;
@@ -16,45 +25,52 @@
         double curSecond = workMinute * 60;
         bool isTimeToWork = true;
 
-        new Task(() =>
+        if (!needDrawing)
         {
-            while (true)
+            //https://www.reddit.com/r/KittyTerminal/comments/1eyl9bn/kitty_cat_doesnt_support_multithreading/
+            //Судя по докам icat не будет работать когда есть ввод((((
+            Task.Run(() =>
             {
-                var key = Console.ReadKey(intercept: true).Key;
-
-                if (key == ConsoleKey.R)
+                while (true)
                 {
-                    Console.Clear();
-                    Write(isTimeToWork ? "RESTART!" : "Rest SKIP", color, defColor);
+                    var key = Console.ReadKey(intercept: true).Key;
 
-                    if (!isTimeToWork)
-                        curPomo++;
+                    if (key == ConsoleKey.R)
+                    {
+                        Console.Clear();
+                        Write(isTimeToWork ? "RESTART!" : "Rest SKIP", ConsoleColor.Red);
 
-                    isTimeToWork = true;
-                    curSecond = workMinute * 60;
+                        if (!isTimeToWork)
+                            curPomo++;
+
+                        isTimeToWork = true;
+                        curSecond = workMinute * 60;
+                    }
+
                 }
-
-            }
-        }).Start();
+            });
+        }
 
         while (true)
         {
             Thread.Sleep(1000);
-
             Console.Clear();
-            Write("To RESTART the pomo or rest SKIP, press 'R'\n\n", color, defColor);
+
+            if (needDrawing)
+                Draw();
+
+            Write("To RESTART the pomo or rest SKIP, press 'R'\n\n");
 
             if (curPomo != 0)
             {
-                Write("Completed pomodoro: ", color, ConsoleColor.Gray);
-                Write($"{curPomo}\n", color, ConsoleColor.Green);
+                Write("Completed pomodoro: ");
+                Write($"{curPomo}\n", ConsoleColor.Yellow);
             }
 
-            Write(isTimeToWork ? "Work: " : "Rest: ", color, defColor);
-            Write($"{BeautifulTime(curSecond)}\n", color, ConsoleColor.Cyan);
+            Write(isTimeToWork ? "Work: " : "Rest: ", ConsoleColor.DarkMagenta);
+            Write($"{BeautifulTime(curSecond)}\n", ConsoleColor.Cyan);
 
             curSecond--;
-
 
             if (curSecond <= 0)
             {
@@ -80,13 +96,25 @@
         var sec = second - (minute * 60);
         return $"{minute}:{sec}";
     }
-    private static void Write(string str, ConsoleColor color, ConsoleColor defColor)
+    private static void Write(string str, ConsoleColor color = 0)
     {
         lock (locker)
         {
-            Console.ForegroundColor = color;
+            Console.ForegroundColor = color is not 0 ? color : defColor;
             Console.Write(str);
-            Console.ForegroundColor = defColor;
         }
+    }
+    private static void Draw()
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = "/sbin/sh",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            Arguments = "/home/timur/Desktop/tpomodoro/pomodoroImage",
+        };
+
+        using var process = Process.Start(psi);
+        process?.WaitForExit();
     }
 }

@@ -12,3 +12,4 @@
 /home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.pdb
 /home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.genruntimeconfig.cache
 /home/timur/Desktop/tpomodoro/obj/Debug/net8.0/ref/tpomodoro.dll
+/home/timur/Desktop/tpomodoro/obj/Debug/net8.0/tpomodoro.sourcelink.json

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#--place <width>x<height>@<left>x<top> --place 15x15@0x0
+kitten icat --align left "mgeMotivation.jpeg"
