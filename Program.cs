@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
+
 public class Program
 {
     private static object locker = new();
@@ -10,10 +10,7 @@ public class Program
         var needDrawing = false;
 
         if (args.Length > 0 && args[0] == "drawEnable")
-        {
             needDrawing = true;
-            Write("The input will NOT work (icat cannot work with it)", ConsoleColor.Red);
-        }
 
         const double workMinute = 25;
         const double restMinute = 5;
@@ -57,9 +54,7 @@ public class Program
             Console.Clear();
 
             if (needDrawing)
-                Draw();
-
-            Write("To RESTART the pomo or rest SKIP, press 'R'\n\n");
+                Draw(isTimeToWork);
 
             if (curPomo != 0)
             {
@@ -104,14 +99,14 @@ public class Program
             Console.Write(str);
         }
     }
-    private static void Draw()
+    private static void Draw(bool isWorkTime)
     {
         var psi = new ProcessStartInfo
         {
             FileName = "/sbin/sh",
             UseShellExecute = false,
             CreateNoWindow = true,
-            Arguments = "/home/timur/Desktop/tpomodoro/pomodoroImage",
+            Arguments = "/home/timur/Desktop/tpomodoro/pomodoroImage" + (isWorkTime ? "" : " r"),
         };
 
         using var process = Process.Start(psi);

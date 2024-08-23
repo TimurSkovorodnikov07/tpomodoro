@@ -1,4 +1,11 @@
 #!/bin/bash
 
 #--place <width>x<height>@<left>x<top> --place 15x15@0x0
-kitten icat --align left "mgeMotivation.jpeg"
+image="mgeMotivation.jpeg"
+
+# Проверка, что аргумент  передан и равен 'r'
+if [[ -n "$1" && "$1" == 'r' ]]; then
+    image="restImage.jpeg"
+fi
+
+kitten icat --align left $image 

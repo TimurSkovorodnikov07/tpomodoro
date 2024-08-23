@@ -2,19 +2,41 @@
 needDrawing=$1
 
 # https://patorjk.com
-echo "
-  _______ _____                          _                 
- |__   __|  __ \                        | |                
-    | |  | |__) |__  _ __ ___   ___   __| | ___  _ __ ___  
-    | |  |  ___/ _ \| '_ \` _ \ / _ \ / _\` |/ _ \| '__/ _ \ 
-    | |  | |  | (_) | | | | | | (_) | (_| | (_) | | | (_) |
-    |_|  |_|   \___/|_| |_| |_|\___/ \__,_|\___/|_|  \___/ 
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+LIGHTBLUE='\033[0;94m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+NC='\033[0m' # no color
+
+echo -e "
+${LIGHTBLUE}  _______${BLUE} _____                          _                 
+${LIGHTBLUE} |__   __${BLUE}|  __ \                        | |                
+${LIGHTBLUE}    | |  ${BLUE}| |__) |__  _ __ ___   ___   __| | ___  _ __ ___  
+${LIGHTBLUE}    | |  ${BLUE}|  ___/ _ \| '_ \` _ \ / _ \ / _\` |/ _ \| '__/ _ \ 
+${LIGHTBLUE}    | |  ${BLUE}| |  | (_) | | | | | | (_) | (_| | (_) | | | (_) |
+${LIGHTBLUE}    |_|  ${BLUE}|_|   \___/|_| |_| |_|\___/ \__,_|\___/|_|  \___/ 
                                                            
                                                            
-"
+${NC}"
+
+
+# -e для работы с цветом
+#Пздц синтаксис, пробелы в условиях обезательны, [ ... ] типо так
+if [[ -n $needDrawing && $needDrawing == 'drawEnable' ]]; then
+  echo -e "${RED}The input will NOT work (icat cannot work with it)${NC}"
+else
+  echo -e "${YELLOW} To RESTART the pomo or rest SKIP, press 'R'${NC}"
+fi
+
+sleep 1
+
 # Определение пути к каталогу скрипта
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Переход в каталог проекта
 cd "$SCRIPT_DIR" || exit
 dotnet run -- "$needDrawing"
+
