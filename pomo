@@ -22,6 +22,8 @@ ${LIGHTBLUE}    |_|  ${BLUE}|_|   \___/|_| |_| |_|\___/ \__,_|\___/|_|  \___/
                                                            
 ${NC}"
 
+#Pin the window in hyprland(for me)
+hyprctl dispatch pin active
 
 # -e для работы с цветом
 #Пздц синтаксис, пробелы в условиях обезательны, [ ... ] типо так

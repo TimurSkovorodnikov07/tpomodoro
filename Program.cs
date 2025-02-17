@@ -1,26 +1,26 @@
 ﻿using System.Diagnostics;
 
-public class Program
+namespace tpomodoro;
+
+public static class Program
 {
-    private static object locker = new();
-    private const ConsoleColor defColor = ConsoleColor.Blue;
+    private static readonly object Locker = new();
+    private const ConsoleColor DefaultColor = ConsoleColor.Gray;
 
     public static void Main(string[] args)
     {
-        var needDrawing = false;
+        bool needDrawing = args.Length > 0 && args[0] == "drawEnable";
 
-        if (args.Length > 0 && args[0] == "drawEnable")
-            needDrawing = true;
+        const int workMinutes = 25;
+        const int restMinutes = 5;
+        const int bigRestMinutes = 15;
 
-        const double workMinute = 25;
-        const double restMinute = 5;
-
-        const double bigRestMinute = 15;
-        const int intervalToBigPomo = 4;
+        const int intervalUntilBigPomo = 4;
 
         int curPomo = 0;
-        double curSecond = workMinute * 60;
-        bool isTimeToWork = true;
+        int curSeconds = workMinutes * 60;
+        bool isItTimeToWork = true;
+        bool needToStop = false;
 
         if (!needDrawing)
         {
@@ -32,18 +32,38 @@ public class Program
                 {
                     var key = Console.ReadKey(intercept: true).Key;
 
-                    if (key == ConsoleKey.R)
+                    if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
+                    {
+                        needToStop = !needToStop;
+                        Thread.Sleep(1000);
+                    }
+                    else if (key == ConsoleKey.R && isItTimeToWork)
                     {
                         Console.Clear();
-                        Write(isTimeToWork ? "RESTART!" : "Rest SKIP", ConsoleColor.Red);
+                        Write("RESTART!", ConsoleColor.Red);
 
-                        if (!isTimeToWork)
-                            curPomo++;
-
-                        isTimeToWork = true;
-                        curSecond = workMinute * 60;
+                        StartWorkTime(out curSeconds, workSeconds: workMinutes * 60, curPomo, isItRestart: true);
+                        isItTimeToWork = true;
                     }
+                    else if (key == ConsoleKey.S)
+                    {
+                        Console.Clear();
+                        Write(isItTimeToWork ? "Pomo SKIP" : "Rest SKIP", ConsoleColor.DarkCyan);
 
+                        if (isItTimeToWork)
+                        {
+                            StartRestTime(out curSeconds,
+                                restSeconds: GetRestMinutes(curPomo, intervalUntilBigPomo, restMinutes, bigRestMinutes),
+                                curPomo);
+                        }
+                        else
+                        {
+                            StartWorkTime(out curSeconds, workSeconds: workMinutes * 60, curPomo: curPomo);
+                            curPomo++;
+                        }
+
+                        isItTimeToWork = !isItTimeToWork;
+                    }
                 }
             });
         }
@@ -53,52 +73,83 @@ public class Program
             Thread.Sleep(1000);
             Console.Clear();
 
-            if (needDrawing)
-                Draw(isTimeToWork);
-
-            if (curPomo != 0)
+            if (needToStop)
             {
-                Write("Completed pomodoro: ");
-                Write($"{curPomo}\n", ConsoleColor.Yellow);
+                ShowCurrentPomo(curPomo);
+                //ShowCurrentTime();
+                Write(isItTimeToWork ? "\ue003 Work: " : "\uee91 Rest: ");
+                Write($"STOPPED", ConsoleColor.DarkRed);
+
+                continue;
             }
 
-            Write(isTimeToWork ? "Work: " : "Rest: ", ConsoleColor.DarkMagenta);
-            Write($"{BeautifulTime(curSecond)}\n", ConsoleColor.Cyan);
+            if (needDrawing)
+                Draw(isItTimeToWork);
 
-            curSecond--;
+            ShowCurrentPomo(curPomo);
+            ShowCurrentTime(curSeconds, isItTimeToWork);
 
-            if (curSecond <= 0)
+            curSeconds--;
+
+            if (curSeconds <= 0)
             {
-                isTimeToWork = !isTimeToWork;
-
-                if (isTimeToWork)
+                isItTimeToWork = !isItTimeToWork;
+                if (isItTimeToWork)
                 {
-                    curSecond = workMinute * 60;
+                    StartWorkTime(out curSeconds, workMinutes * 60, curPomo);
                 }
                 else
                 {
+                    StartRestTime(out curSeconds,
+                        GetRestMinutes(curPomo, intervalUntilBigPomo, restMinutes, bigRestMinutes), curPomo);
+
                     curPomo++;
-                    curSecond = ((curPomo != 0 && curPomo % intervalToBigPomo == 0) ? bigRestMinute : restMinute) * 60;
                 }
             }
         }
-
     }
 
-    private static string BeautifulTime(double second)
+    private static int GetRestMinutes(int curPomo, int intervalUntilBigPomo, int restMinutes, int bigRestMinutes)
     {
-        var minute = Math.Truncate(second / 60);//Truncate уберает дробную часть
-        var sec = second - (minute * 60);
-        return $"{minute}:{sec}";
+        return ((curPomo != 0 && curPomo % intervalUntilBigPomo == 0)
+            ? bigRestMinutes
+            : restMinutes) * 60;
     }
+
+    private static void ShowCurrentTime(int curSeconds, bool isItTimeToWork)
+    {
+        Write(isItTimeToWork ? "\ue003 Work: " : "\uee91 Rest: ");
+        Write($"{GetBeautifulTime(curSeconds)}", ConsoleColor.Blue);
+    }
+
+    private static void ShowCurrentPomo(int curPomo)
+    {
+        if (curPomo != 0)
+        {
+            Write("Comp. pomo: ");
+            Write($"{curPomo}\n", ConsoleColor.Yellow);
+        }
+    }
+
+    private static string GetBeautifulTime(double seconds)
+    {
+        var minutes = Math.Truncate(seconds / 60); //Truncate уберает дробную часть
+        var remainSeconds = seconds - (minutes * 60);
+
+        var visibleMinutes = minutes <= 9 ? $"0{minutes}" : $"{minutes}";
+        var visibleSeconds = remainSeconds <= 9 ? $"0{remainSeconds}" : $"{remainSeconds}";
+        return $"{visibleMinutes}:{visibleSeconds}";
+    }
+
     private static void Write(string str, ConsoleColor color = 0)
     {
-        lock (locker)
+        lock (Locker)
         {
-            Console.ForegroundColor = color is not 0 ? color : defColor;
+            Console.ForegroundColor = color is not 0 ? color : DefaultColor;
             Console.Write(str);
         }
     }
+
     private static void Draw(bool isWorkTime)
     {
         var psi = new ProcessStartInfo
@@ -108,8 +159,40 @@ public class Program
             CreateNoWindow = true,
             Arguments = "/home/timur/Desktop/tpomodoro/pomodoroImage" + (isWorkTime ? "" : " r"),
         };
+        ProcessStartAndWait(psi);
+    }
 
+    private static void SendMessage(string text)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = "/sbin/sh",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            Arguments = $"-c \"DISPLAY=:0 notify-send '{text}'\"",
+        };
+        ProcessStartAndWait(psi);
+    }
+
+    private static void ProcessStartAndWait(ProcessStartInfo psi)
+    {
         using var process = Process.Start(psi);
         process?.WaitForExit();
+    }
+
+    private static void StartWorkTime(out int curSecond, int workSeconds, int curPomo, bool isItRestart = false)
+    {
+        curSecond = workSeconds;
+
+        if (isItRestart)
+            SendMessage($"\ue003 Restart! Current pomo: {curPomo}");
+        else 
+            SendMessage($"\ue003 The rest is over! Current pomo: {curPomo}");
+    }
+
+    private static void StartRestTime(out int curSecond, int restSeconds, int finishedPomo)
+    {
+        curSecond = restSeconds;
+        SendMessage($"\ue003 Finished the {finishedPomo}th pomodoro, time of rest!");
     }
 }
