@@ -166,11 +166,12 @@ public static class Program
     {
         var psi = new ProcessStartInfo
         {
-            FileName = "/sbin/sh",
+            FileName = "/bin/bash",
             UseShellExecute = false,
             CreateNoWindow = true,
-            Arguments = $"-c \"DISPLAY=:0 notify-send '{text}'\"",
+            Arguments = $"-c \"DISPLAY=:0 notify-send '{text}' && paplay /usr/share/sounds/freedesktop/stereo/bell.oga\""
         };
+
         ProcessStartAndWait(psi);
     }
 
